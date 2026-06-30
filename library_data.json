@@ -1,0 +1,168 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "abhi",
+      "email": "abhi@gmail.com",
+      "password": "$2a$10$.jvvyarZQN/LrOynz0dn9O/ayYGyvopC22nLtP7ZQIs0zs3hVszKq",
+      "role": "student",
+      "created_at": "2026-05-01T12:03:33.315Z"
+    },
+    {
+      "id": 2,
+      "name": "tharun",
+      "email": "tharunmangollu29@gmail.com",
+      "password": "$2a$10$wXZDfT0eei2KSVTi2m9Auu5XiYlGD9xgwkgFesWFzLnjvFFyd/xRm",
+      "role": "admin",
+      "created_at": "2026-05-01T12:05:38.272Z"
+    },
+    {
+      "id": 3,
+      "name": "abhi",
+      "email": "abhi4@gmail.com",
+      "password": "$2a$10$7.mhTBrnGG15xMdygFav9ejKlk6cHL4gC7kIgwPPl6O1K5hxNeQmi",
+      "role": "student",
+      "created_at": "2026-05-01T12:10:08.774Z"
+    },
+    {
+      "id": 4,
+      "name": "abhi",
+      "email": "abhi5@gmail.com",
+      "password": "$2a$10$jcibcZ67.xARSsMNmlk8TuHG8fuwvvupmabxCh9XaVKAecdIofFcq",
+      "role": "student",
+      "created_at": "2026-05-01T12:14:38.103Z"
+    },
+    {
+      "id": 5,
+      "name": "abhi",
+      "email": "abhi3@gmail.com",
+      "password": "$2a$10$Y3K34ctdyqtbNfeHBJ1id.FcRvwMul/54IVpHowM0SSp/hmNeiIoO",
+      "role": "student",
+      "created_at": "2026-05-01T12:15:52.443Z"
+    },
+    {
+      "id": 6,
+      "name": "krish",
+      "email": "krish4@gmail.com",
+      "password": "$2a$10$LzkSBeJh178jun2lMZpoAOn1n44HeixeRCdjvPD5zPb7zwqNtpHK.",
+      "role": "student",
+      "created_at": "2026-05-02T14:07:46.060Z"
+    },
+    {
+      "id": 7,
+      "name": "varshath",
+      "email": "varshath@gmail.com",
+      "password": "$2a$10$u4cODv4Ea5f5F6GWV9UOTuxElKtufpYR2IFg6Zu0ADhn3W23Y6G0C",
+      "role": "admin",
+      "created_at": "2026-05-02T14:10:43.848Z"
+    },
+    {
+      "id": 8,
+      "name": "sai",
+      "email": "sai@gmail.com",
+      "password": "$2a$10$ieIlTC5nMPpyOkV.E/96teeP/0zDu93rDS7Y8xuAQj643RN8HpKGG",
+      "role": "admin",
+      "created_at": "2026-05-02T14:15:13.562Z"
+    },
+    {
+      "id": 9,
+      "name": "sita",
+      "email": "sita@gmail.com",
+      "password": "$2a$10$og0/ZY64NCG0170qC9iTI.TqbKsmScL/Xm3uxDlwTWYovBTBIW1Fe",
+      "role": "student",
+      "created_at": "2026-06-30T13:50:04.195Z"
+    }
+  ],
+  "library": [
+    {
+      "id": 1,
+      "book": "oops",
+      "author": "kishore",
+      "genre": "codeing",
+      "total": 4,
+      "issued": 2,
+      "created_at": "2026-05-01T12:06:39.544Z"
+    },
+    {
+      "id": 2,
+      "book": "operating system",
+      "author": "manisha",
+      "genre": "codeing",
+      "total": 4,
+      "issued": 1,
+      "created_at": "2026-05-02T14:16:23.411Z"
+    }
+  ],
+  "records": [
+    {
+      "id": 1,
+      "student": "krishana",
+      "studentId": "24C11A05G7",
+      "book": "oops",
+      "issueDate": "2026-05-01",
+      "issueTime": "18:39",
+      "returnDate": "2026-05-30",
+      "actualReturnDate": null,
+      "returned": false,
+      "finePaid": true,
+      "created_at": "2026-05-01T12:08:34.696Z"
+    },
+    {
+      "id": 2,
+      "student": "abhi",
+      "studentId": "abhi4@gmail.com",
+      "book": "oops",
+      "issueDate": "2026-05-01",
+      "issueTime": "17:40",
+      "returnDate": "2026-05-11",
+      "actualReturnDate": null,
+      "returned": false,
+      "finePaid": false,
+      "created_at": "2026-05-01T12:10:42.869Z"
+    },
+    {
+      "id": 3,
+      "student": "tharun",
+      "studentId": "24C11A05G7",
+      "book": "operating system",
+      "issueDate": "2026-04-21",
+      "issueTime": "20:48",
+      "returnDate": "2026-05-01",
+      "actualReturnDate": null,
+      "returned": false,
+      "finePaid": false,
+      "created_at": "2026-05-02T14:18:54.505Z"
+    }
+  ],
+  "requests": [],
+  "history": [
+    {
+      "id": 4,
+      "type": "issued",
+      "title": "\"operating system\" issued to tharun",
+      "sub": "Issue: 2026-04-21 → Return: 2026-05-01",
+      "ts": "2026-05-02T14:18:54.506Z"
+    },
+    {
+      "id": 3,
+      "type": "issued",
+      "title": "\"oops\" self-borrowed by abhi",
+      "sub": "Return by: 2026-05-11",
+      "ts": "2026-05-01T12:10:42.870Z"
+    },
+    {
+      "id": 2,
+      "type": "fine",
+      "title": "Fine of ₹100 paid by krishana",
+      "sub": "Book: \"oops\"",
+      "ts": "2026-05-01T12:09:01.047Z"
+    },
+    {
+      "id": 1,
+      "type": "issued",
+      "title": "\"oops\" issued to krishana",
+      "sub": "Issue: 2026-05-01 → Return: 2026-05-30",
+      "ts": "2026-05-01T12:08:34.696Z"
+    }
+  ]
+}

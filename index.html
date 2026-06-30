@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Library Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f0eaff;
+      --surface: #f7f3ff;
+      --sidebar: #ede6ff;
+      --card: #ffffff;
+      --card2: #f8f5ff;
+      --border: rgba(99,102,241,0.18);
+      --border2: rgba(99,102,241,0.09);
+
+      /* Blue accent + purple gradient palette */
+      --violet: #3b82f6;
+      --violet-light: #60a5fa;
+      --violet-glow: rgba(59,130,246,0.18);
+      --pink: #8b5cf6;
+      --pink-glow: rgba(139,92,246,0.18);
+      --cyan: #06b6d4;
+      --cyan-glow: rgba(6,182,212,0.18);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16,185,129,0.18);
+      --amber: #f59e0b;
+      --amber-glow: rgba(245,158,11,0.18);
+      --rose: #ef4444;
+
+      --text: #1e1b4b;
+      --text2: #4338ca;
+      --text3: #6d28d9;
+      --sidebar-w: 230px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 25%, #818cf8 50%, #6366f1 75%, #7c3aed 100%); min-height: 100vh; color: var(--text); height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── BACKGROUND MESH ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 10% 10%, rgba(167,139,250,0.45) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 5%, rgba(196,181,253,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 50% at 50% 100%, rgba(139,92,246,0.3) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 80% 60%, rgba(99,102,241,0.2) 0%, transparent 50%);
+    }
+
+    /* ══════════════════ AUTH ══════════════════ */
+    #authScreen {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; justify-content: center;
+      height: 100vh; flex-direction: column;
+    }
+
+    .auth-glow-ring {
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,111,247,0.15) 0%, transparent 70%);
+      pointer-events: none;
+      animation: pulseRing 4s ease-in-out infinite alternate;
+    }
+    @keyframes pulseRing {
+      from { transform: scale(0.95); opacity: 0.6; }
+      to   { transform: scale(1.05); opacity: 1; }
+    }
+
+    .auth-card {
+      position: relative; z-index: 2;
+      background: linear-gradient(145deg, rgba(255,255,255,0.97), rgba(248,245,255,0.99));
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 20px;
+      padding: 44px 40px;
+      width: 400px;
+      box-shadow:
+        0 0 0 1px rgba(124,111,247,0.08),
+        0 24px 80px rgba(0,0,0,0.6),
+        0 0 60px rgba(124,111,247,0.08);
+      text-align: center;
+      animation: slideUp 0.4s cubic-bezier(0.34,1.4,0.64,1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+
+    .auth-logo {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin: 0 auto 18px;
+      box-shadow: 0 8px 24px rgba(124,111,247,0.4);
+    }
+
+    .auth-card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+    .auth-card .auth-sub {
+      font-size: 0.8rem;
+      color: var(--text3);
+      margin-bottom: 28px;
+    }
+
+    .auth-card .form-group { text-align: left; margin-bottom: 14px; }
+    .auth-card label {
+      font-size: 0.72rem; color: var(--text3); font-weight: 600;
+      letter-spacing: 0.6px; text-transform: uppercase; display: block; margin-bottom: 6px;
+    }
+    .auth-card input,
+    .auth-card select {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 10px;
+      color: #1e1b4b;
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      outline: none; width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .auth-card input:focus,
+    .auth-card select:focus {
+      border-color: var(--violet);
+      box-shadow: 0 0 0 3px rgba(124,111,247,0.15);
+    }
+    .auth-card input::placeholder { color: var(--text3); }
+
+    .auth-card .btn {
+      width: 100%; padding: 13px;
+      font-size: 0.92rem;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+      font-weight: 600;
+      border: none; border-radius: 10px; cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-top: 12px;
+      letter-spacing: 0.2px;
+      box-shadow: 0 4px 20px rgba(124,111,247,0.35);
+    }
+    .auth-card .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(124,111,247,0.5);
+    }
+    .auth-card .btn:active { transform: translateY(0); }
+
+    .auth-switch {
+      margin-top: 20px; font-size: 0.8rem; color: var(--text3); cursor: pointer;
+    }
+    .auth-switch span { color: var(--violet-light); font-weight: 600; }
+    .auth-switch:hover span { text-decoration: underline; }
+
+    .hidden { display: none !important; }
+
+    /* ══════════════════ DASHBOARD ══════════════════ */
+    #dashScreen { display: none; flex-direction: column; height: 100vh; position: relative; z-index: 1; }
+    #dashScreen.active { display: flex; }
+
+    /* Header */
+    header {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 64px;
+      display: flex; align-items: center; gap: 14px;
+      flex-shrink: 0; position: sticky; top: 0; z-index: 100;
+    }
+
+    .header-logo {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(124,111,247,0.4);
+    }
+
+    header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem; font-weight: 700;
+      background: linear-gradient(135deg, #1e1b4b 40%, #3b82f6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -0.2px;
+    }
+    header p { color: var(--text3); font-size: 0.72rem; margin-top: 1px; }
+
+    .header-divider { flex: 1; }
+
+    .user-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 20px; padding: 5px 14px 5px 8px;
+    }
+    .user-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700; color: #fff;
+    }
+    #currentUserLabel { font-size: 0.8rem; color: var(--violet-light); font-weight: 600; }
+
+    .btn-logout {
+      background: rgba(251,113,133,0.1);
+      border: 1px solid rgba(251,113,133,0.25);
+      color: var(--rose);
+      border-radius: 8px; padding: 6px 14px;
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: all 0.18s;
+    }
+    .btn-logout:hover { background: rgba(251,113,133,0.2); }
+
+    .app-body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .tabs {
+      width: var(--sidebar-w); min-width: var(--sidebar-w);
+      background: rgba(237,230,255,0.95);
+      border-right: 1px solid var(--border2);
+      display: flex; flex-direction: column;
+      padding: 20px 12px; gap: 3px;
+      overflow-y: auto; height: 100%; flex-shrink: 0;
+    }
+    .tabs-label {
+      font-size: 0.63rem; font-weight: 700;
+      color: var(--text3); text-transform: uppercase;
+      letter-spacing: 1.5px; padding: 4px 10px 10px;
+      border-bottom: 1px solid var(--border2);
+      margin-bottom: 8px;
+    }
+    .tab {
+      padding: 10px 12px; cursor: pointer;
+      font-size: 0.83rem; font-weight: 500;
+      color: #6d28d9; border-radius: 10px;
+      white-space: nowrap; transition: all 0.18s;
+      display: flex; align-items: center; gap: 10px;
+      border: none; background: transparent;
+      position: relative; overflow: hidden;
+    }
+    .tab:hover { color: #1e1b4b; background: rgba(59,130,246,0.1); }
+    .tab.active {
+      color: #3b82f6;
+      background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(99,102,241,0.08));
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px rgba(59,130,246,0.2);
+    }
+    .tab.active::before {
+      content: '';
+      position: absolute; left: 0; top: 20%; bottom: 20%;
+      width: 3px; border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #3b82f6, #6366f1);
+    }
+    .tab-icon { font-size: 1rem; }
+
+    /* ── MAIN CONTENT ── */
+    .main { padding: 30px 36px; flex: 1; overflow-y: auto; height: 100%; }
+    .section { display: none; }
+    .section.active { display: block; animation: fadeSlide 0.25s ease; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem; font-weight: 700;
+      color: #1e1b4b; margin-bottom: 4px; letter-spacing: -0.3px;
+    }
+    .section-subtitle { color: var(--text3); font-size: 0.82rem; margin-bottom: 24px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,245,255,0.98));
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px 24px; margin-bottom: 20px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 12px 16px; margin-bottom: 16px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    label {
+      font-size: 0.7rem; color: var(--text3); font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    input, select {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(124,111,247,0.18);
+      border-radius: 9px; color: #1e1b4b;
+      padding: 9px 12px; font-size: 0.86rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+    }
+    input:focus, select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+    input::placeholder { color: var(--text3); }
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5) sepia(1) hue-rotate(200deg); cursor: pointer; }
+    select option { background: #f8f5ff; color: #1e1b4b; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 18px; border: none; border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.83rem; font-weight: 600; cursor: pointer;
+      transition: all 0.18s; background: transparent;
+      letter-spacing: 0.1px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(124,111,247,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124,111,247,0.45); }
+    .btn-sm { padding: 5px 11px; font-size: 0.74rem; border-radius: 7px; }
+    .btn-edit {
+      background: rgba(34,211,238,0.1); color: var(--cyan);
+      border: 1px solid rgba(34,211,238,0.25);
+    }
+    .btn-edit:hover { background: rgba(34,211,238,0.2); }
+    .btn-delete {
+      background: rgba(251,113,133,0.1); color: var(--rose);
+      border: 1px solid rgba(251,113,133,0.25);
+    }
+    .btn-delete:hover { background: rgba(251,113,133,0.2); }
+    .btn-pay {
+      background: rgba(251,191,36,0.1); color: var(--amber);
+      border: 1px solid rgba(251,191,36,0.25);
+    }
+    .btn-pay:hover { background: rgba(251,191,36,0.2); }
+    .btn-return {
+      background: rgba(52,211,153,0.1); color: var(--emerald);
+      border: 1px solid rgba(52,211,153,0.25);
+    }
+    .btn-return:hover { background: rgba(52,211,153,0.2); }
+    .btn-cancel {
+      background: rgba(255,255,255,0.05); color: var(--text2);
+      border: 1px solid var(--border);
+    }
+    .btn-cancel:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+    .btn-notify {
+      background: rgba(244,114,182,0.1); color: var(--pink);
+      border: 1px solid rgba(244,114,182,0.25);
+    }
+    .btn-notify:hover { background: rgba(244,114,182,0.2); }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    thead tr { background: rgba(59,130,246,0.07); }
+    th {
+      padding: 11px 14px; text-align: left;
+      color: #6d28d9; font-weight: 600;
+      font-size: 0.68rem; letter-spacing: 0.6px; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 11px 14px; border-bottom: 1px solid var(--border2); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(59,130,246,0.06); }
+
+    /* ── BADGES ── */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+    .badge-green { background: rgba(52,211,153,0.12); color: var(--emerald); }
+    .badge-red   { background: rgba(251,113,133,0.12); color: var(--rose); }
+    .badge-yellow{ background: rgba(251,191,36,0.12);  color: var(--amber); }
+    .badge-blue  { background: rgba(34,211,238,0.12);  color: var(--cyan); }
+
+    .fine-cell { font-weight: 700; }
+    .fine-cell.has-fine { color: var(--rose); }
+    .fine-cell.no-fine  { color: var(--emerald); }
+
+    /* ── STATS ── */
+    .stats { display: flex; gap: 14px; margin-bottom: 28px; flex-wrap: wrap; }
+    .stat-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,245,255,0.98));
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px;
+      flex: 1; min-width: 120px;
+      position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    }
+    .stat-card:nth-child(1)::before { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+    .stat-card:nth-child(2)::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
+    .stat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--amber), var(--rose)); }
+    .stat-card:nth-child(4)::before { background: linear-gradient(90deg, var(--rose), var(--pink)); }
+    .stat-glow {
+      position: absolute; top: -30px; right: -20px;
+      width: 80px; height: 80px; border-radius: 50%;
+      opacity: 0.15; pointer-events: none;
+    }
+    .stat-card:nth-child(1) .stat-glow { background: var(--violet); }
+    .stat-card:nth-child(2) .stat-glow { background: var(--cyan); }
+    .stat-card:nth-child(3) .stat-glow { background: var(--amber); }
+    .stat-card:nth-child(4) .stat-glow { background: var(--rose); }
+    .stat-label { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 700; }
+    .stat-card:nth-child(1) .stat-value { color: var(--violet-light); }
+    .stat-card:nth-child(2) .stat-value { color: var(--cyan); }
+    .stat-card:nth-child(3) .stat-value { color: var(--amber); }
+    .stat-card:nth-child(4) .stat-value { color: var(--rose); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.97), rgba(248,245,255,0.99));
+      border: 1px solid var(--border);
+      color: var(--text); padding: 13px 18px; border-radius: 12px;
+      font-size: 0.85rem;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      z-index: 9999; display: none; align-items: center; gap: 10px;
+      max-width: 320px; animation: slideIn 0.25s ease;
+    }
+    #toast.show { display: flex; }
+    #toast.success { border-left: 3px solid var(--emerald); }
+    #toast.error   { border-left: 3px solid var(--rose); }
+    #toast.info    { border-left: 3px solid var(--cyan); }
+    @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+      z-index: 500; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,245,255,0.98));
+      border: 1px solid rgba(124,111,247,0.3);
+      border-radius: 18px; padding: 32px;
+      width: 500px; max-width: 95vw;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 40px rgba(124,111,247,0.1);
+      animation: modalIn 0.3s cubic-bezier(0.34,1.4,0.64,1);
+    }
+    @keyframes modalIn { from { transform: scale(0.94) translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .modal h3 {
+      font-family: 'Syne', sans-serif; color: var(--text);
+      margin-bottom: 22px; font-size: 1.1rem;
+    }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+
+    /* ── MISC ── */
+    .empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 0.88rem; }
+    .empty span { font-size: 2rem; display: block; margin-bottom: 10px; opacity: 0.6; }
+    .search-row { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }
+    .search-row input { max-width: 300px; }
+
+    /* ── HISTORY ── */
+    .history-group { margin-bottom: 26px; }
+    .history-date {
+      font-size: 0.72rem; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 10px; padding-bottom: 6px;
+      border-bottom: 1px solid var(--border2);
+    }
+    .history-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border2); }
+    .history-item:last-child { border-bottom: none; }
+    .hist-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+    .hist-issued   { background: rgba(34,211,238,0.12); }
+    .hist-returned { background: rgba(52,211,153,0.12); }
+    .hist-fine     { background: rgba(251,191,36,0.12); }
+    .hist-request  { background: rgba(244,114,182,0.12); }
+    .hist-body { flex: 1; }
+    .hist-title { font-size: 0.86rem; color: var(--text); margin-bottom: 2px; }
+    .hist-sub   { font-size: 0.76rem; color: var(--text3); }
+    .hist-time  { font-size: 0.73rem; color: var(--text3); white-space: nowrap; }
+
+    /* ── ISSUE POPUP ── */
+    #issuePopup {
+      position: fixed; top: 20px; left: 50%;
+      transform: translateX(-50%) translateY(-130%);
+      z-index: 10000; width: 480px; max-width: 94vw;
+      background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(248,245,255,0.99));
+      border: 1px solid rgba(124,111,247,0.3);
+      border-top: 3px solid transparent;
+      border-image: linear-gradient(90deg, var(--violet), var(--pink)) 1;
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 40px rgba(124,111,247,0.15);
+      padding: 30px 32px 26px;
+      transition: transform 0.5s cubic-bezier(0.34,1.4,0.64,1), opacity 0.4s;
+      text-align: center; opacity: 0; pointer-events: none;
+    }
+    #issuePopup.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: all; }
+    #issuePopup .ip-stamp { font-size: 3rem; margin-bottom: 6px; animation: stampIn 0.4s 0.5s both cubic-bezier(0.34,1.8,0.64,1); }
+    @keyframes stampIn { from { transform: scale(2.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    #issuePopup .ip-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; color: var(--text); margin-bottom: 4px; font-weight: 700; }
+    #issuePopup .ip-sub { font-size: 0.8rem; color: var(--text3); margin-bottom: 18px; }
+    #issuePopup .ip-card { background: rgba(59,130,246,0.06); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; text-align: left; margin-bottom: 16px; }
+    #issuePopup .ip-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border2); font-size: 0.85rem; }
+    #issuePopup .ip-row:last-child { border-bottom: none; }
+    #issuePopup .ip-row .lbl { color: var(--text3); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.4px; }
+    #issuePopup .ip-row .val { color: var(--text); font-weight: 600; }
+    #issuePopup .ip-row .val.highlight { color: var(--violet-light); }
+    #issuePopup .ip-fine-note { font-size: 0.77rem; color: var(--text3); margin-bottom: 18px; background: rgba(251,191,36,0.07); border-radius: 8px; padding: 9px 13px; border-left: 3px solid rgba(251,191,36,0.4); text-align: left; }
+    #issuePopup .ip-close {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff; border: none; border-radius: 9px;
+      padding: 11px 36px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(124,111,247,0.35);
+    }
+    #issuePopup .ip-close:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124,111,247,0.5); }
+    #issuePopup .ip-bar { position: absolute; bottom: 0; left: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #6366f1); border-radius: 0 0 12px 12px; width: 100%; transform-origin: left; }
+    #issuePopup .ip-bar.running { animation: barShrink 5s linear forwards; }
+    @keyframes barShrink { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+    /* Loading */
+    #loadingBar { display:none; position:fixed; inset:0; background:rgba(167,139,250,0.92); backdrop-filter:blur(10px); z-index:9999; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+    #loadingBar .loading-icon { font-size:2.5rem; animation: float 1.5s ease-in-out infinite alternate; }
+    @keyframes float { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+    .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(124,111,247,0.2); border-top-color: var(--violet); border-radius:50%; animation:spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes loadPulse { from { width: 20% } to { width: 90% } }
+
+    /* Offline */
+    #offlineBanner { display:none; background: rgba(239,68,68,0.1); border-bottom: 1px solid rgba(239,68,68,0.25); color: #ef4444; padding: 8px 28px; font-size: 0.8rem; text-align:center; }
+    #offlineBanner.show { display:block; }
+
+    @media(max-width:700px) {
+      .app-body { flex-direction: column; }
+      .tabs { width: 100%; flex-direction: row; flex-wrap: wrap; padding: 8px; border-right: none; border-bottom: 1px solid var(--border); }
+      .tab { border-radius: 8px; padding: 7px 12px; font-size: 0.78rem; }
+      .tab.active::before { display: none; }
+      .tabs-label { display: none; }
+      header { padding: 0 16px; }
+      .main { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ═══════════════ AUTH SCREEN ═══════════════ -->
+<div id="authScreen">
+  <div class="auth-glow-ring"></div>
+
+  <!-- REGISTER -->
+  <div class="auth-card" id="registerForm">
+    <div class="auth-logo">📚</div>
+    <h2>Create Account</h2>
+    <p class="auth-sub">Join the Library Management System</p>
+    <div class="form-group"><label>Full Name</label><input type="text" id="regName" placeholder="For library records"></div>
+    <div class="form-group"><label>Email Address</label><input type="email" id="regEmail" placeholder="you@example.com"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="regPass" placeholder="••••••••"></div>
+    <div class="form-group"><label>Role</label>
+      <select id="regRole">
+        <option value="student">Student</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <button class="btn" onclick="register()">Create Account →</button>
+    <div class="auth-switch" onclick="toggleAuth()">Already have an account? <span>Sign in</span></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="auth-card hidden" id="loginForm">
+    <div class="auth-logo">📚</div>
+    <h2>Welcome Back</h2>
+    <p class="auth-sub">Library Management System</p>
+    <div class="form-group"><label>Email Address</label><input type="email" id="loginEmail" placeholder="you@example.com"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+    <button class="btn" onclick="login()">Sign In →</button>
+    <div class="auth-switch" onclick="toggleAuth()">Don't have an account? <span>Register</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════ DASHBOARD SCREEN ═══════════════ -->
+<div id="dashScreen">
+  <div id="loadingBar">
+    <div class="loading-icon">📚</div>
+    <div style="color:var(--violet-light);font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;">Loading your library…</div>
+    <div style="width:200px;height:3px;background:rgba(124,111,247,0.15);border-radius:2px;overflow:hidden;margin-top:6px;">
+      <div style="height:100%;background:linear-gradient(90deg,var(--violet),var(--pink));border-radius:2px;animation:loadPulse 1s ease-in-out infinite alternate;"></div>
+    </div>
+  </div>
+
+  <div id="offlineBanner">⚠️ Cannot connect to backend. Make sure the server is running at <strong id="apiUrlDisplay"></strong></div>
+
+  <!-- Issue Popup -->
+  <div id="issuePopup">
+    <div class="ip-stamp">📚</div>
+    <div class="ip-title">Book Issued Successfully!</div>
+    <div class="ip-sub" id="ip_sub">Issue confirmed</div>
+    <div class="ip-card">
+      <div class="ip-row"><span class="lbl">Student</span><span class="val" id="ip_student">—</span></div>
+      <div class="ip-row"><span class="lbl">Student ID</span><span class="val" id="ip_sid">—</span></div>
+      <div class="ip-row"><span class="lbl">Book</span><span class="val highlight" id="ip_book">—</span></div>
+      <div class="ip-row"><span class="lbl">Issue Date</span><span class="val" id="ip_issue">—</span></div>
+      <div class="ip-row"><span class="lbl">Return By</span><span class="val highlight" id="ip_return">—</span></div>
+      <div class="ip-row"><span class="lbl">Total Days</span><span class="val" id="ip_days">—</span></div>
+    </div>
+    <div class="ip-fine-note">⚠️ A fine of <strong>₹5/day</strong> will apply starting from the <strong>11th day</strong>.</div>
+    <button class="ip-close" onclick="closeIssuePopup()">✓ Got it</button>
+    <div class="ip-bar" id="ip_bar"></div>
+  </div>
+
+  <header>
+    <div class="header-logo">📚</div>
+    <div style="flex:1">
+      <h1>Library Management System</h1>
+      <p>Manage books, issue records, and requests</p>
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar" id="userAvatarInitial">?</div>
+      <span id="currentUserLabel"></span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Sign Out</button>
+  </header>
+
+  <div class="app-body">
+    <div class="tabs">
+      <div class="tabs-label">Navigation</div>
+      <div class="tab active" onclick="switchTab('inventory', this)"><span class="tab-icon">📦</span> Inventory</div>
+      <div class="tab" id="tabIssue" onclick="switchTab('issue', this)"><span class="tab-icon">📋</span> Issue Book</div>
+      <div class="tab" onclick="switchTab('records', this)"><span class="tab-icon">📄</span> Issued Records</div>
+      <div class="tab" onclick="switchTab('requests', this)"><span class="tab-icon">🤝</span> Friend Requests</div>
+      <div class="tab" id="tabHistory" onclick="switchTab('history', this)"><span class="tab-icon">🕑</span> History</div>
+      <div class="tab" id="tabStudentBorrow" onclick="switchTab('borrow', this)"><span class="tab-icon">📗</span> Browse & Borrow</div>
+    </div>
+
+    <div class="main">
+      <div class="stats">
+        <div class="stat-card"><div class="stat-glow"></div><div class="stat-label">Total Titles</div><div class="stat-value" id="statTitles">0</div></div>
+        <div class="stat-card"><div class="stat-glow"></div><div class="stat-label">Total Copies</div><div class="stat-value" id="statCopies">0</div></div>
+        <div class="stat-card"><div class="stat-glow"></div><div class="stat-label">Books Issued</div><div class="stat-value" id="statIssued">0</div></div>
+        <div class="stat-card"><div class="stat-glow"></div><div class="stat-label">Pending Fines</div><div class="stat-value" id="statFines">₹0</div></div>
+      </div>
+
+      <!-- ── INVENTORY ── -->
+      <div class="section active" id="sec-inventory">
+        <div class="section-title">Book Inventory</div>
+        <div class="section-subtitle">Add and manage books available in the library</div>
+        <div class="card" id="addBookCard">
+          <div class="form-grid">
+            <div class="form-group"><label>Book Name</label><input type="text" id="libBook" placeholder="e.g. The Great Gatsby"></div>
+            <div class="form-group"><label>Author Name</label><input type="text" id="author" placeholder="e.g. F. Scott Fitzgerald"></div>
+            <div class="form-group"><label>Genre</label><input type="text" id="genre" placeholder="e.g. Fiction"></div>
+            <div class="form-group"><label>Total Copies</label><input type="number" id="copies" min="1" placeholder="e.g. 5"></div>
+          </div>
+          <button class="btn btn-primary" onclick="addLibraryBook()">＋ Add Book</button>
+        </div>
+        <div class="search-row">
+          <input type="text" id="searchLib" placeholder="🔍  Search books..." oninput="renderLibraryTable()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Book Name</th><th>Author</th><th>Genre</th><th>Total Copies</th><th>Available</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="libraryTable"></tbody>
+          </table>
+          <div id="libEmpty" class="empty"><span>📚</span>No books added yet</div>
+        </div>
+      </div>
+
+      <!-- ── ISSUE BOOK ── -->
+      <div class="section" id="sec-issue">
+        <div class="section-title">Issue a Book</div>
+        <div class="section-subtitle">Assign a book to a student. Fine of ₹5/day applies after 10 days.</div>
+        <div class="card">
+          <div class="form-grid">
+            <div class="form-group"><label>Student Name</label><input type="text" id="student" placeholder="Full name"></div>
+            <div class="form-group"><label>Student ID</label><input type="text" id="studentId" placeholder="e.g. STU001"></div>
+            <div class="form-group">
+              <label>Book Name</label>
+              <input type="text" id="book" list="bookSuggestions" placeholder="Start typing...">
+              <datalist id="bookSuggestions"></datalist>
+            </div>
+            <div class="form-group"><label>Issue Date</label><input type="date" id="issueDate"></div>
+            <div class="form-group"><label>Issue Time</label><input type="time" id="issueTime"></div>
+            <div class="form-group"><label>Return Date</label><input type="date" id="returnDate"></div>
+          </div>
+          <button class="btn btn-primary" onclick="issueBook()">📋 Issue Book</button>
+        </div>
+      </div>
+
+      <!-- ── RECORDS ── -->
+      <div class="section" id="sec-records">
+        <div class="section-title">Issued Book Records</div>
+        <div class="section-subtitle">Track all issued books, overdue fines, and returns</div>
+        <div class="search-row">
+          <input type="text" id="searchRecords" placeholder="🔍  Search by student or book..." oninput="renderRecordsTable()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Student</th><th>ID</th><th>Book</th><th>Issue Date</th><th>Time</th><th>Return Date</th><th>Days</th><th>Fine (₹)</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="bookTable"></tbody>
+          </table>
+          <div id="recEmpty" class="empty"><span>📋</span>No books issued yet</div>
+        </div>
+      </div>
+
+      <!-- ── REQUESTS ── -->
+      <div class="section" id="sec-requests">
+        <div class="section-title">Book Requests to Friends</div>
+        <div class="section-subtitle">Send book borrowing requests to friends</div>
+        <div class="card">
+          <div class="form-grid">
+            <div class="form-group"><label>Your Name</label><input type="text" id="yourName" placeholder="Your name"></div>
+            <div class="form-group"><label>Friend's Name</label><input type="text" id="friendName" placeholder="Friend's name"></div>
+            <div class="form-group"><label>Requested Book</label><input type="text" id="requestBook" placeholder="Book title"></div>
+            <div class="form-group"><label>Message (optional)</label><input type="text" id="reqMsg" placeholder="Any note..."></div>
+          </div>
+          <button class="btn btn-primary" onclick="sendRequest()">📨 Send Request</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>From</th><th>To (Friend)</th><th>Book</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="requestTable"></tbody>
+          </table>
+          <div id="reqEmpty" class="empty"><span>🤝</span>No requests sent yet</div>
+        </div>
+      </div>
+
+      <!-- ── HISTORY ── -->
+      <div class="section" id="sec-history">
+        <div class="section-title">Activity History</div>
+        <div class="section-subtitle">Complete log of all issued books, returns, fine payments and friend requests</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px;flex-wrap:wrap;">
+          <input type="text" id="searchHistory" placeholder="🔍  Search history..." style="max-width:280px;" oninput="renderHistory()">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-sm btn-notify" onclick="sendNotificationsNow()">📧 Send Alerts Now</button>
+            <button class="btn btn-sm btn-delete" onclick="clearHistory()">🗑 Clear All History</button>
+          </div>
+        </div>
+        <div class="card" id="historyContainer"><div class="empty"><span>🕑</span>No history yet</div></div>
+      </div>
+
+      <!-- ── STUDENT BORROW ── -->
+      <div class="section" id="sec-borrow">
+        <div class="section-title">Browse & Borrow Books</div>
+        <div class="section-subtitle">Browse available books and borrow them directly (10-day loan, auto-assigned)</div>
+        <div class="search-row">
+          <input type="text" id="searchBorrow" placeholder="🔍  Search available books..." oninput="renderBorrowTable()">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Book Name</th><th>Author</th><th>Genre</th><th>Available</th><th>Action</th></tr></thead>
+            <tbody id="borrowTable"></tbody>
+          </table>
+          <div id="borrowEmpty" class="empty"><span>📗</span>No books available</div>
+        </div>
+      </div>
+
+    </div><!-- .main -->
+  </div><!-- .app-body -->
+</div><!-- #dashScreen -->
+
+<!-- ── EDIT MODAL ── -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3>✏️ Edit Issued Record</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Student Name</label><input type="text" id="e_student"></div>
+      <div class="form-group"><label>Student ID</label><input type="text" id="e_studentId"></div>
+      <div class="form-group"><label>Book Name</label><input type="text" id="e_book"></div>
+      <div class="form-group"><label>Issue Date</label><input type="date" id="e_issueDate"></div>
+      <div class="form-group"><label>Issue Time</label><input type="time" id="e_issueTime"></div>
+      <div class="form-group"><label>Return Date</label><input type="date" id="e_returnDate"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:3001/api';
+  document.getElementById('apiUrlDisplay').textContent = 'http://localhost:3001';
+
+  let library = [], records = [], requests = [], historyData = [];
+  let editRecordId = null, currentUser = null, _popupTimer = null;
+
+  async function api(method, path, body) {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    try {
+      const res = await fetch(API + path, opts);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      document.getElementById('offlineBanner').classList.remove('show');
+      return data;
+    } catch (err) {
+      if (err.message.includes('fetch') || err.message.includes('NetworkError') || err.message.includes('Failed to fetch')) {
+        document.getElementById('offlineBanner').classList.add('show');
+      }
+      throw err;
+    }
+  }
+
+  let _toastTimer;
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show ' + type;
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+  }
+
+  function showAuth() {
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('dashScreen').classList.remove('active');
+  }
+  function showDash() {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('dashScreen').classList.add('active');
+  }
+  function toggleAuth() {
+    document.getElementById('loginForm').classList.toggle('hidden');
+    document.getElementById('registerForm').classList.toggle('hidden');
+  }
+
+  async function register() {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPass').value.trim();
+    const role = document.getElementById('regRole').value;
+    if (!name || !email || !password) return showToast('Please fill all fields', 'error');
+    try {
+      await api('POST', '/auth/register', { name, email, password, role });
+      showToast('Registration successful! Please log in.', 'success');
+      ['regName', 'regEmail', 'regPass'].forEach(id => document.getElementById(id).value = '');
+      toggleAuth();
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function login() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPass').value.trim();
+    if (!email || !password) return showToast('Please fill all fields', 'error');
+    try {
+      const user = await api('POST', '/auth/login', { email, password });
+      currentUser = user;
+      sessionStorage.setItem('lms:currentUser', JSON.stringify(user));
+      await bootDashboard();
+    } catch (err) { showToast(err.message || 'Invalid credentials', 'error'); }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('lms:currentUser');
+    currentUser = null;
+    library = []; records = []; requests = []; historyData = [];
+    showAuth();
+  }
+
+  function applyRBAC() {
+    if (!currentUser) return;
+    const isAdmin = currentUser.role === 'admin';
+    document.getElementById('currentUserLabel').textContent = currentUser.name + ' · ' + currentUser.role;
+    const initials = currentUser.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+    document.getElementById('userAvatarInitial').textContent = initials;
+    document.getElementById('tabIssue').style.display = isAdmin ? 'flex' : 'none';
+    document.getElementById('tabHistory').style.display = isAdmin ? 'flex' : 'none';
+    document.getElementById('tabStudentBorrow').style.display = !isAdmin ? 'flex' : 'none';
+    const addCard = document.getElementById('addBookCard');
+    if (addCard) addCard.style.display = isAdmin ? 'block' : 'none';
+  }
+
+  function switchTab(tab, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('sec-' + tab).classList.add('active');
+    if (tab === 'history') loadHistory();
+  }
+
+  function calcDays(issue, end) {
+    const s = new Date(issue); const e = new Date(end);
+    s.setHours(0,0,0,0); e.setHours(0,0,0,0);
+    const d = Math.floor((e - s) / 86400000) + 1;
+    return d > 0 ? d : 0;
+  }
+  function calcFine(issue, end) {
+    const d = calcDays(issue, end);
+    return d > 10 ? (d - 10) * 5 : 0;
+  }
+
+  function updateStats() {
+    document.getElementById('statTitles').textContent = library.length;
+    document.getElementById('statCopies').textContent = library.reduce((s, b) => s + b.total, 0);
+    document.getElementById('statIssued').textContent = records.filter(r => !r.returned).length;
+    const fines = records.filter(r => !r.returned && !r.finePaid).reduce((s, r) => s + calcFine(r.issueDate, r.returnDate), 0);
+    document.getElementById('statFines').textContent = '₹' + fines;
+  }
+
+  async function loadLibrary() {
+    library = await api('GET', '/library');
+    renderLibraryTable(); updateBookSuggestions(); updateStats();
+  }
+
+  async function addLibraryBook() {
+    const book = document.getElementById('libBook').value.trim();
+    const author = document.getElementById('author').value.trim();
+    const genre = document.getElementById('genre').value.trim();
+    const copies = parseInt(document.getElementById('copies').value);
+    if (!book || !author || isNaN(copies) || copies < 1) return showToast('Please fill all required fields correctly.', 'error');
+    try {
+      const newBook = await api('POST', '/library', { book, author, genre, total: copies });
+      library.push(newBook);
+      ['libBook', 'author', 'genre', 'copies'].forEach(id => document.getElementById(id).value = '');
+      renderLibraryTable(); updateBookSuggestions(); updateStats();
+      showToast(`"${book}" added to inventory.`, 'success');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function deleteLibraryBook(id) {
+    if (!confirm('Remove this book from inventory?')) return;
+    try {
+      await api('DELETE', '/library/' + id);
+      library = library.filter(b => b.id !== id);
+      renderLibraryTable(); updateBookSuggestions(); updateStats();
+      showToast('Book removed from inventory.', 'info');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  function renderLibraryTable() {
+    const query = (document.getElementById('searchLib').value || '').toLowerCase();
+    const tbody = document.getElementById('libraryTable');
+    const filtered = library.filter(b => b.book.toLowerCase().includes(query) || b.author.toLowerCase().includes(query));
+    document.getElementById('libEmpty').style.display = filtered.length ? 'none' : 'block';
+    const isAdmin = currentUser && currentUser.role === 'admin';
+    tbody.innerHTML = filtered.map((b, i) => {
+      const available = b.total - b.issued;
+      const statusBadge = available <= 0
+        ? '<span class="badge badge-red">Out of Stock</span>'
+        : available <= 2
+          ? `<span class="badge badge-yellow">Low (${available})</span>`
+          : `<span class="badge badge-green">Available (${available})</span>`;
+      const deleteBtn = isAdmin ? `<button class="btn btn-sm btn-delete" onclick="deleteLibraryBook(${b.id})">Delete</button>` : '';
+      return `<tr><td>${i+1}</td><td><strong>${b.book}</strong></td><td>${b.author}</td><td>${b.genre}</td><td>${b.total}</td><td>${available}</td><td>${statusBadge}</td><td>${deleteBtn}</td></tr>`;
+    }).join('');
+  }
+
+  function updateBookSuggestions() {
+    const dl = document.getElementById('bookSuggestions');
+    if (dl) dl.innerHTML = library.filter(b => b.total - b.issued > 0).map(b => `<option value="${b.book}">`).join('');
+  }
+
+  async function issueBook() {
+    const student = document.getElementById('student').value.trim();
+    const studentId = document.getElementById('studentId').value.trim();
+    const book = document.getElementById('book').value.trim();
+    const issueDate = document.getElementById('issueDate').value;
+    const issueTime = document.getElementById('issueTime').value;
+    const returnDate = document.getElementById('returnDate').value;
+    if (!student || !book || !issueDate || !issueTime || !returnDate) return showToast('Please fill all fields.', 'error');
+    if (new Date(returnDate) <= new Date(issueDate)) return showToast('Return date must be after issue date.', 'error');
+    try {
+      const rec = await api('POST', '/records', { student, studentId, book, issueDate, issueTime, returnDate });
+      records.unshift(rec);
+      const lib = library.find(b => b.book.toLowerCase() === book.toLowerCase());
+      if (lib) lib.issued++;
+      ['student','studentId','book','issueDate','issueTime','returnDate'].forEach(id => document.getElementById(id).value = '');
+      renderLibraryTable(); renderRecordsTable(); updateStats();
+      showToast(`"${rec.book}" issued to ${student}.`, 'success');
+      showIssuePopup(student, studentId, rec.book, issueDate, returnDate);
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function loadRecords() { records = await api('GET', '/records'); renderRecordsTable(); updateStats(); }
+
+  function renderRecordsTable() {
+    const query = (document.getElementById('searchRecords').value || '').toLowerCase();
+    const tbody = document.getElementById('bookTable');
+    const isAdmin = currentUser && currentUser.role === 'admin';
+    let filtered = records.filter(r => r.student.toLowerCase().includes(query) || r.book.toLowerCase().includes(query));
+    if (!isAdmin && currentUser) {
+      filtered = filtered.filter(r =>
+        (r.studentId || '').toLowerCase() === currentUser.email.toLowerCase() ||
+        r.student.toLowerCase() === currentUser.name.toLowerCase()
+      );
+    }
+    document.getElementById('recEmpty').style.display = filtered.length ? 'none' : 'block';
+    tbody.innerHTML = filtered.map((r, i) => {
+      const days = calcDays(r.issueDate, r.returnDate);
+      const fine = r.returned ? 0 : calcFine(r.issueDate, r.returnDate);
+      const fineClass = fine > 0 ? 'has-fine' : 'no-fine';
+      const statusBadge = r.returned
+        ? '<span class="badge badge-green">Returned</span>'
+        : fine > 0
+          ? '<span class="badge badge-red">Overdue</span>'
+          : '<span class="badge badge-blue">Active</span>';
+      let actions = '';
+      if (!r.returned) actions += `<button class="btn btn-sm btn-return" onclick="returnBook(${r.id})">Return</button>`;
+      if (!r.returned && fine > 0 && !r.finePaid) actions += ` <button class="btn btn-sm btn-pay" onclick="payFine(${r.id})">Pay Fine</button>`;
+      if (isAdmin) actions += ` <button class="btn btn-sm btn-edit" onclick="openEdit(${r.id})">Edit</button> <button class="btn btn-sm btn-delete" onclick="deleteRecord(${r.id})">Delete</button>`;
+      return `<tr>
+        <td>${i+1}</td><td><strong>${r.student}</strong></td><td>${r.studentId||'—'}</td><td>${r.book}</td>
+        <td>${r.issueDate}</td><td>${r.issueTime||'—'}</td><td>${r.returnDate}</td>
+        <td>${days}</td><td class="fine-cell ${fineClass}">₹${fine}</td><td>${statusBadge}</td>
+        <td style="display:flex;gap:5px;flex-wrap:wrap;">${actions}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function returnBook(id) {
+    try {
+      const res = await api('PATCH', `/records/${id}/return`);
+      const r = records.find(x => x.id === id);
+      if (r) { r.returned = true; r.actualReturnDate = res.actualReturnDate; }
+      const lib = library.find(b => b.book.toLowerCase() === (r?.book || '').toLowerCase());
+      if (lib) lib.issued = Math.max(0, lib.issued - 1);
+      renderLibraryTable(); renderRecordsTable(); updateStats();
+      showToast(`"${r?.book}" marked as returned.`, 'success');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function payFine(id) {
+    try {
+      await api('PATCH', `/records/${id}/pay-fine`);
+      const r = records.find(x => x.id === id);
+      if (r) r.finePaid = true;
+      renderRecordsTable(); updateStats();
+      showToast('Fine marked as paid.', 'success');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function deleteRecord(id) {
+    if (!confirm('Delete this record?')) return;
+    try {
+      await api('DELETE', `/records/${id}`);
+      const r = records.find(x => x.id === id);
+      if (r && !r.returned) {
+        const lib = library.find(b => b.book.toLowerCase() === r.book.toLowerCase());
+        if (lib) lib.issued = Math.max(0, lib.issued - 1);
+      }
+      records = records.filter(x => x.id !== id);
+      renderLibraryTable(); renderRecordsTable(); updateStats();
+      showToast('Record deleted.', 'info');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  function openEdit(id) {
+    editRecordId = id;
+    const r = records.find(x => x.id === id);
+    document.getElementById('e_student').value = r.student;
+    document.getElementById('e_studentId').value = r.studentId || '';
+    document.getElementById('e_book').value = r.book;
+    document.getElementById('e_issueDate').value = r.issueDate;
+    document.getElementById('e_issueTime').value = r.issueTime || '';
+    document.getElementById('e_returnDate').value = r.returnDate;
+    document.getElementById('editModal').classList.add('open');
+  }
+  function closeModal() { document.getElementById('editModal').classList.remove('open'); editRecordId = null; }
+  async function saveEdit() {
+    const student = document.getElementById('e_student').value.trim();
+    const studentId = document.getElementById('e_studentId').value.trim();
+    const book = document.getElementById('e_book').value.trim();
+    const issueDate = document.getElementById('e_issueDate').value;
+    const issueTime = document.getElementById('e_issueTime').value;
+    const returnDate = document.getElementById('e_returnDate').value;
+    if (new Date(returnDate) <= new Date(issueDate)) return showToast('Return date must be after issue date.', 'error');
+    try {
+      await api('PUT', `/records/${editRecordId}`, { student, studentId, book, issueDate, issueTime, returnDate });
+      const r = records.find(x => x.id === editRecordId);
+      if (r) Object.assign(r, { student, studentId, book, issueDate, issueTime, returnDate });
+      closeModal(); renderRecordsTable(); updateStats();
+      showToast('Record updated successfully.', 'success');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function loadRequests() { requests = await api('GET', '/requests'); renderRequestTable(); }
+
+  async function sendRequest() {
+    const yourName = document.getElementById('yourName').value.trim();
+    const friendName = document.getElementById('friendName').value.trim();
+    const book = document.getElementById('requestBook').value.trim();
+    const msg = document.getElementById('reqMsg').value.trim();
+    if (!yourName || !friendName || !book) return showToast('Please fill all required fields.', 'error');
+    try {
+      const req = await api('POST', '/requests', { yourName, friendName, book, msg });
+      requests.unshift(req);
+      ['yourName','friendName','requestBook','reqMsg'].forEach(id => document.getElementById(id).value = '');
+      renderRequestTable();
+      showToast(`Request sent to ${friendName}.`, 'success');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function updateRequestStatus(id, status) {
+    try {
+      await api('PATCH', `/requests/${id}/status`, { status });
+      const r = requests.find(x => x.id === id);
+      if (r) r.status = status;
+      renderRequestTable();
+      showToast(`Request marked as ${status}.`, 'info');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function deleteRequest(id) {
+    if (!confirm('Delete this request?')) return;
+    try {
+      await api('DELETE', `/requests/${id}`);
+      requests = requests.filter(x => x.id !== id);
+      renderRequestTable();
+      showToast('Request deleted.', 'info');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  function renderRequestTable() {
+    const tbody = document.getElementById('requestTable');
+    document.getElementById('reqEmpty').style.display = requests.length ? 'none' : 'block';
+    tbody.innerHTML = requests.map((r, i) => {
+      const badge = r.status === 'Accepted'
+        ? '<span class="badge badge-green">Accepted</span>'
+        : r.status === 'Declined'
+          ? '<span class="badge badge-red">Declined</span>'
+          : '<span class="badge badge-yellow">Pending</span>';
+      const actions = r.status === 'Pending'
+        ? `<button class="btn btn-sm btn-return" onclick="updateRequestStatus(${r.id},'Accepted')">Accept</button>
+           <button class="btn btn-sm btn-delete" onclick="updateRequestStatus(${r.id},'Declined')">Decline</button>`
+        : '';
+      return `<tr>
+        <td>${i+1}</td><td>${r.yourName}</td><td>${r.friendName}</td><td>${r.book}</td>
+        <td>${r.msg||'—'}</td><td>${r.date}</td><td>${badge}</td>
+        <td style="display:flex;gap:5px;flex-wrap:wrap;">
+          ${actions}
+          <button class="btn btn-sm btn-delete" onclick="deleteRequest(${r.id})">Delete</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function loadHistory() { historyData = await api('GET', '/history'); renderHistory(); }
+
+  function renderHistory() {
+    const query = (document.getElementById('searchHistory')?.value || '').toLowerCase();
+    const container = document.getElementById('historyContainer');
+    const filtered = historyData.filter(h =>
+      (h.title||'').toLowerCase().includes(query) || (h.sub||'').toLowerCase().includes(query)
+    );
+    if (!filtered.length) { container.innerHTML = '<div class="empty"><span>🕑</span>No history yet</div>'; return; }
+    const groups = {};
+    filtered.forEach(h => {
+      const date = new Date(h.ts).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(h);
+    });
+    const iconClass = { issued: 'hist-issued', returned: 'hist-returned', fine: 'hist-fine', request: 'hist-request' };
+    const iconEmoji = { issued: '📋', returned: '✅', fine: '💛', request: '🤝' };
+    container.innerHTML = Object.entries(groups).map(([date, items]) => `
+      <div class="history-group">
+        <div class="history-date">${date}</div>
+        ${items.map(h => `
+          <div class="history-item">
+            <div class="hist-icon ${iconClass[h.type]||''}">${iconEmoji[h.type]||'📌'}</div>
+            <div class="hist-body">
+              <div class="hist-title">${h.title}</div>
+              <div class="hist-sub">${h.sub||''}</div>
+            </div>
+            <div class="hist-time">${new Date(h.ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</div>
+          </div>`).join('')}
+      </div>`).join('');
+  }
+
+  async function clearHistory() {
+    if (!confirm('Clear all history? This cannot be undone.')) return;
+    try {
+      await api('DELETE', '/history');
+      historyData = []; renderHistory();
+      showToast('History cleared.', 'info');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  function renderBorrowTable() {
+    const query = (document.getElementById('searchBorrow').value || '').toLowerCase();
+    const tbody = document.getElementById('borrowTable');
+    const available = library.filter(b =>
+      (b.total - b.issued > 0) &&
+      (b.book.toLowerCase().includes(query) || b.author.toLowerCase().includes(query))
+    );
+    document.getElementById('borrowEmpty').style.display = available.length ? 'none' : 'block';
+    tbody.innerHTML = available.map((b, i) => `
+      <tr>
+        <td>${i+1}</td><td><strong>${b.book}</strong></td><td>${b.author}</td><td>${b.genre}</td>
+        <td>${b.total - b.issued}</td>
+        <td><button class="btn btn-sm btn-return" onclick="selfBorrow(${b.id})">📗 Borrow</button></td>
+      </tr>`).join('');
+  }
+
+  async function selfBorrow(bookId) {
+    if (!currentUser) return;
+    if (!confirm('Borrow this book? It will be assigned for 10 days.')) return;
+    try {
+      const rec = await api('POST', '/records/self-borrow', { studentName: currentUser.name, studentEmail: currentUser.email, bookId });
+      records.unshift(rec);
+      const lib = library.find(b => b.id === bookId);
+      if (lib) lib.issued++;
+      renderLibraryTable(); renderBorrowTable(); renderRecordsTable(); updateStats();
+      showToast(`"${rec.book}" borrowed! Return by ${rec.returnDate}.`, 'success');
+      const recTab = Array.from(document.querySelectorAll('.tab')).find(t => t.textContent.includes('Issued Records'));
+      if (recTab) switchTab('records', recTab);
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function sendNotificationsNow() {
+    try {
+      showToast('Sending notifications…', 'info');
+      const res = await api('POST', '/notifications/send-now');
+      showToast(res.message || 'Notifications sent!', 'success');
+      await loadHistory();
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  function showIssuePopup(student, studentId, book, issueDate, returnDate) {
+    const days = calcDays(issueDate, returnDate);
+    document.getElementById('ip_student').textContent = student;
+    document.getElementById('ip_sid').textContent = studentId || '—';
+    document.getElementById('ip_book').textContent = book;
+    document.getElementById('ip_issue').textContent = issueDate;
+    document.getElementById('ip_return').textContent = returnDate;
+    document.getElementById('ip_days').textContent = days + ' day' + (days !== 1 ? 's' : '');
+    document.getElementById('ip_sub').textContent = `Issued to ${student} · ${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
+    const popup = document.getElementById('issuePopup');
+    const bar = document.getElementById('ip_bar');
+    bar.classList.remove('running');
+    void bar.offsetWidth;
+    bar.classList.add('running');
+    popup.classList.add('show');
+    if (_popupTimer) clearTimeout(_popupTimer);
+    _popupTimer = setTimeout(closeIssuePopup, 5000);
+  }
+  function closeIssuePopup() {
+    document.getElementById('issuePopup').classList.remove('show');
+    if (_popupTimer) { clearTimeout(_popupTimer); _popupTimer = null; }
+  }
+
+  async function bootDashboard() {
+    showDash();
+    document.getElementById('loadingBar').style.display = 'flex';
+    try {
+      await Promise.all([loadLibrary(), loadRecords(), loadRequests()]);
+      applyRBAC();
+      if (currentUser.role === 'student') renderBorrowTable();
+    } catch (err) {
+      showToast('Could not load data from server. Is the backend running?', 'error');
+    } finally {
+      document.getElementById('loadingBar').style.display = 'none';
+    }
+  }
+
+  (function init() {
+    const saved = sessionStorage.getItem('lms:currentUser');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.email) { currentUser = parsed; bootDashboard(); return; }
+      } catch (e) {}
+    }
+    showAuth();
+  })();
+</script>
+</body>
+</html>
