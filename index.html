@@ -898,7 +898,19 @@
   }
 
  function updateStats() {
-  const issuedRecords = records.filter(r => !r.returned);
+  const isAdmin = currentUser && currentUser.role === 'admin';
+
+  // Admin sees stats across every student; a student only ever sees their own.
+  const scopedRecords = isAdmin
+    ? records
+    : records.filter(r =>
+        currentUser && (
+          (r.studentId || '').toLowerCase() === currentUser.email.toLowerCase() ||
+          r.student.toLowerCase() === currentUser.name.toLowerCase()
+        )
+      );
+
+  const issuedRecords = scopedRecords.filter(r => !r.returned);
 
   document.getElementById('statTitles').textContent = library.length;
   document.getElementById('statCopies').textContent =
@@ -1129,8 +1141,22 @@
 
   function renderRequestTable() {
     const tbody = document.getElementById('requestTable');
-    document.getElementById('reqEmpty').style.display = requests.length ? 'none' : 'block';
-    tbody.innerHTML = requests.map((r, i) => {
+    const isAdmin = currentUser && currentUser.role === 'admin';
+
+    // Admin can see every request (to track how many requests/messages are
+    // flowing through the system). A student should only see requests they
+    // sent themselves or that were addressed to them.
+    const filtered = isAdmin
+      ? requests
+      : requests.filter(r =>
+          currentUser && (
+            r.yourName.toLowerCase() === currentUser.name.toLowerCase() ||
+            r.friendName.toLowerCase() === currentUser.name.toLowerCase()
+          )
+        );
+
+    document.getElementById('reqEmpty').style.display = filtered.length ? 'none' : 'block';
+    tbody.innerHTML = filtered.map((r, i) => {
       const badge = r.status === 'Accepted'
         ? '<span class="badge badge-green">Accepted</span>'
         : r.status === 'Declined'
