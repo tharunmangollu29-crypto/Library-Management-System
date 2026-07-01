@@ -897,13 +897,22 @@
     return d > 10 ? (d - 10) * 5 : 0;
   }
 
-  function updateStats() {
-    document.getElementById('statTitles').textContent = library.length;
-    document.getElementById('statCopies').textContent = library.reduce((s, b) => s + b.total, 0);
-    document.getElementById('statIssued').textContent = records.filter(r => !r.returned).length;
-    const fines = records.filter(r => !r.returned && !r.finePaid).reduce((s, r) => s + calcFine(r.issueDate, r.returnDate), 0);
-    document.getElementById('statFines').textContent = '₹' + fines;
-  }
+ function updateStats() {
+  const issuedRecords = records.filter(r => !r.returned);
+
+  document.getElementById('statTitles').textContent = library.length;
+  document.getElementById('statCopies').textContent =
+    library.reduce((s, b) => s + b.total, 0);
+
+  document.getElementById('statIssued').textContent =
+    issuedRecords.length;
+
+  const fines = issuedRecords
+    .filter(r => !r.finePaid)
+    .reduce((s, r) => s + calcFine(r.issueDate, r.returnDate), 0);
+
+  document.getElementById('statFines').textContent = '₹' + fines;
+}
 
   async function loadLibrary() {
     library = await api('GET', '/library');
